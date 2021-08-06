@@ -9,6 +9,7 @@ public class PatientSearchParameters {
     private Boolean filterPatientsByLocation;
     private String identifier;
     private String name;
+    private String gender;
     private String addressFieldName;
     private String addressFieldValue;
     private Integer start;
@@ -21,6 +22,7 @@ public class PatientSearchParameters {
     private String[] addressSearchResultFields;
     private String[] patientSearchResultFields;
     private Boolean filterOnAllIdentifiers;
+    private String nationalId;
 
     public PatientSearchParameters(RequestContext context) {
         String query = context.getParameter("q");
@@ -53,6 +55,8 @@ public class PatientSearchParameters {
         this.setFilterPatientsByLocation(Boolean.valueOf(context.getParameter("filterPatientsByLocation")));
         this.setFilterOnAllIdentifiers(Boolean.valueOf(context.getParameter("filterOnAllIdentifiers")));
         this.setLoginLocationUuid(context.getParameter("loginLocationUuid"));
+        this.setNationalId(context.getParameter("nationalId"));
+        this.setGender(context.getParameter("gender"));
     }
 
     public String getIdentifier() {
@@ -69,6 +73,13 @@ public class PatientSearchParameters {
 
     public void setName(String name) {
         this.name = name;
+        
+    }
+    public String getGender() {
+        return gender;
+    }
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getAddressFieldName() {
@@ -173,5 +184,13 @@ public class PatientSearchParameters {
 
     public Boolean getFilterOnAllIdentifiers() {
         return filterOnAllIdentifiers;
+    }
+    	
+    public String getNationalId() {
+        return nationalId;
+    }
+
+    public void setNationalId(String nationalId) {
+        this.nationalId = nationalId;
     }
 }

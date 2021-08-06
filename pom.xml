@@ -47,6 +47,15 @@
         <mockitoVersion>1.10.19</mockitoVersion>
         <argLine>-Xmx1024m</argLine>
         <bacteriology.version>1.1-SNAPSHOT</bacteriology.version>
+        <!-- Registration Core API version -->
+        <registrationCoreApiVersion>1.9.0-SNAPSHOT</registrationCoreApiVersion>
+        <!-- dcm4che and everest framework versions -->
+        <everestVersion>1.1.0</everestVersion>
+        <dcm4chee-xds2Version>2.0.4</dcm4chee-xds2Version>
+        <!-- dcm4che and everest framework versions -->
+        <!-- XDS Sender version -->
+        <xds-senderVersion>1.0.2</xds-senderVersion>
+        <providermanagementVersion>2.5.0</providermanagementVersion>
     </properties>
 
    
@@ -234,6 +243,39 @@
                 <version>${idgenVersion}</version>
                 <scope>provided</scope>
             </dependency>
+            <!-- APPOINTMENTS MODULE DEPENDENCY -->
+            <dependency>
+                    <groupId>org.openmrs.module</groupId>
+                    <artifactId>appointments-api</artifactId>
+                    <version>1.1-SNAPSHOT</version>
+                    <scope>provided</scope>
+            </dependency>
+            <!-- APPOINTMENTS MODULE DEPENDENCY -->
+            <!-- XDS Sender Dependency -->
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>xds-sender-api</artifactId>
+                <version>${xds-senderVersion}</version>
+                <scope>provided</scope>
+                <type>jar</type>
+            </dependency>
+            <!-- XDS Sender Dependency -->
+            <!-- Registration Core Api Dependency -->
+            <!--<dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>registrationcore-api</artifactId>
+                <version>${registrationCoreApiVersion}</version>
+                <scope>provided</scope>
+                <type>jar</type>
+            </dependency>-->
+            <!-- Registration Core Api Dependency -->
+            <!--<dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>providermanagement-api</artifactId>
+                <version>${providermanagementVersion}</version>
+                <scope>provided</scope>
+                <type>jar</type>
+            </dependency>-->
             <dependency>
                 <groupId>org.openmrs.module</groupId>
                 <artifactId>emrapi-api</artifactId>
@@ -382,10 +424,46 @@
                 <version>${mockitoVersion}</version>
                 <scope>test</scope>
             </dependency>
+            <!-- dcm4chee and everest framework dependencies -->
+            <dependency>
+                <groupId>org.marc.everest</groupId>
+                <artifactId>everest-core</artifactId>
+                <version>${everestVersion}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.marc.everest</groupId>
+                <artifactId>everest-rmim-uv-cdar2</artifactId>
+                <version>${everestVersion}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.marc.everest</groupId>
+                <artifactId>everest-formatters-xml-its1</artifactId>
+                <version>${everestVersion}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.marc.everest</groupId>
+                <artifactId>everest-formatters-xml-dt-r1</artifactId>
+                <version>${everestVersion}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.dcm4che</groupId>
+                <artifactId>dcm4chee-xds2-common</artifactId>
+                <version>${dcm4chee-xds2Version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.dcm4che</groupId>
+                <artifactId>dcm4chee-xds2-infoset</artifactId>
+                <version>${dcm4chee-xds2Version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <!-- dcm4chee and everest framework dependencies -->
 
         </dependencies>
-
-
     </dependencyManagement>
     
     <dependencies>
@@ -595,6 +673,16 @@
             <id>rubygems-releases</id>
             <url>http://rubygems-proxy.torquebox.org/releases</url>
         </repository>
+        <!-- dcm4chee and evereset framework repository -->
+        <repository>
+            <id>dcm4che</id>
+            <url>http://dcm4che.org/maven2</url>
+        </repository>
+        <repository>
+            <id>marc-te-main</id>
+            <url>http://te.marc-hi.ca/mvn</url>
+        </repository>
+        <!-- dcm4chee and evereset framework repository -->
     </repositories>
     <pluginRepositories>
         <pluginRepository>

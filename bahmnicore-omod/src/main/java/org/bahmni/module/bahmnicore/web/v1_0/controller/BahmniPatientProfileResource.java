@@ -4,6 +4,7 @@ package org.bahmni.module.bahmnicore.web.v1_0.controller;
 import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.exception.DataException;
@@ -36,6 +37,7 @@ import org.openmrs.module.webservices.rest.web.v1_0.resource.openmrs1_8.PersonRe
 import org.openmrs.module.webservices.rest.web.v1_0.resource.openmrs1_8.RelationShipTypeResource1_8;
 import org.openmrs.module.webservices.rest.web.v1_0.resource.openmrs1_8.RelationshipResource1_8;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -64,8 +67,16 @@ import java.util.Objects;
 @RequestMapping(value = "/rest/" + RestConstants.VERSION_1 + "/bahmnicore/patientprofile")
 public class BahmniPatientProfileResource extends DelegatingCrudResource<PatientProfile> {
 
+   
+    private static final String REGISTRATION_CORE_SERVICE_BEAN_ID = "registrationCoreService";
+    private static final String REGISTRATION_CORE_SERVICE_PATIENT_METHOD = "raiseRegisterPatientEvent";
+    
     private EmrPatientProfileService emrPatientProfileService;
     private IdentifierSourceServiceWrapper identifierSourceServiceWrapper;
+
+    	
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Autowired
     public BahmniPatientProfileResource(EmrPatientProfileService emrPatientProfileService, IdentifierSourceServiceWrapper identifierSourceServiceWrapper) {
@@ -113,6 +124,13 @@ public class BahmniPatientProfileResource extends DelegatingCrudResource<Patient
                 } else if (identifierProperties.get("identifier") == null) {
                     String generatedIdentifier = identifierSourceServiceWrapper.generateIdentifierUsingIdentifierSourceUuid(identifierSourceUuid, "");
                     identifierProperties.put("identifier", generatedIdentifier);
+
+            // Use reflection to call raiseRegisterPatientEvent inside the RegistrationCoreServiceImpl, inside RegistrationCore
+            // Using reflection as a quick hack to get around module dependencies
+            // No time to do anything else currently
+            //Object fetcher = applicationContext.getBean(REGISTRATION_CORE_SERVICE_BEAN_ID);
+            //MethodUtils.invokeMethod(fetcher, REGISTRATION_CORE_SERVICE_PATIENT_METHOD, delegate.getPatient(), delegate.getRelationships());
+            // -----------------------------------------------------------------------------------------------------------------------
                 }
             }
         }

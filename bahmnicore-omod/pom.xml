@@ -23,17 +23,88 @@
     </properties>
 
     <dependencies>
+    
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>compass</artifactId>
+            <version>1.0.3</version>
+            <type>gem</type>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>rb-inotify</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>rake</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>episodes-api</artifactId>
             <version>${episodes.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>rb-inotify</artifactId>
+            <version>0.9.5</version>
+            <type>gem</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>rake</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>rake</artifactId>
+            <version>11.0.1</version>
+            <type>gem</type>
+        </dependency>
         <dependency>
             <groupId>org.bahmni.module</groupId>
             <artifactId>mail-appender</artifactId>
             <version>0.92-SNAPSHOT</version>
         </dependency>
+        <!-- APPOINTMENTS MODULE DEPENDENCY -->
+        <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>appointments-api</artifactId>
+        </dependency>
+        <!-- APPOINTMENTS MODULE DEPENDENCY -->
+        <!-- XDS Sender Dependency -->
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>xds-sender-api</artifactId>
+        </dependency>
+        <!-- XDS Sender Dependency -->
+        <!-- Registration Core Api Dependency -->
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>registrationcore-omod</artifactId>
+            <version>${registrationCoreApiVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>registrationcore-api</artifactId>
+            <version>${registrationCoreApiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Registration Core Api Dependency -->
+        <!--<dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>providermanagement-api</artifactId>
+        </dependency>-->
+                
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>emrapi-api-1.12</artifactId>
@@ -442,6 +513,7 @@
                         <goals>
                             <goal>initialize-module</goal>
                         </goals>
+                        
                     </execution>
                     <execution>
                         <id>pack</id>
@@ -507,6 +579,10 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <jrubyVersion>1.7.10</jrubyVersion>
+                    <execArgs>${gem.home}/bin/compass compile ${basedir}/src/main/compass</execArgs>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -78,10 +78,35 @@
                 <version>${metadatamapping.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>emrapi-api</artifactId>
+            <version>${emrapi-omod.version}</version>
+            </dependency>
+
+        <dependency>
+            <groupId>org.bahmni.module</groupId>
+            <artifactId>bahmni-emr-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

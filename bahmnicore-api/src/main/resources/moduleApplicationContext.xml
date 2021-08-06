@@ -97,6 +97,15 @@
             </list>
         </property>
     </bean>
+    
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.bahmni.module.bahmnicore.service.BahmniXDSService</value>
+                <ref bean="bahmniXDSServiceImpl"/>
+            </list>
+        </property>
+    </bean>
 
     <bean id="bahmniEncounterTransactionService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
         <property name="transactionManager">
