@@ -53,6 +53,7 @@ public class CDAEncounterDocument {
 	private Encounter encounter;
 	private List<String> obsNames;
 	private Vitals vitals;
+	private FlowSheetSummary flowSheetSummary;
 
 
 	private String patientId;
@@ -75,6 +76,7 @@ public class CDAEncounterDocument {
 		obsNames = new ArrayList<>();
 		xpath = XPathFactory.newInstance().newXPath();
 		vitals = new Vitals();
+		flowSheetSummary = new FlowSheetSummary();
 	}
 
 	public CDAEncounterDocument(String cdaDocument){
@@ -82,6 +84,7 @@ public class CDAEncounterDocument {
 		obsNames = new ArrayList<>();
 		xpath = XPathFactory.newInstance().newXPath();
 		vitals = new Vitals();
+		flowSheetSummary = new FlowSheetSummary();
 	}
 
 	public CDAEncounterDocument(String cdaDocument, Patient patient, String patientId, String providerId,
@@ -107,6 +110,7 @@ public class CDAEncounterDocument {
 		obsNames = new ArrayList<>();
 		xpath = XPathFactory.newInstance().newXPath();
 		vitals = new Vitals();
+		flowSheetSummary = new FlowSheetSummary();
 	}
 
 	public String getCdaDocument(){
@@ -232,6 +236,9 @@ public class CDAEncounterDocument {
 	public Vitals getVitals() { return this.vitals; }
 	public void setVitals(Vitals vitals) { this.vitals = vitals; }
 
+	public FlowSheetSummary getFlowSheetSummaryValues() { return this.flowSheetSummary; }
+	public void setFlowSheetSummaryValues (FlowSheetSummary flowSheetSummaryValues) { this.flowSheetSummary = flowSheetSummaryValues; }
+
 	public void populateEncounterFromCDADocument() {
 		try {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -321,6 +328,59 @@ public class CDAEncounterDocument {
 								} else {
 									// NOTHING
 								}
+							}
+						}
+					} else if(eElement.getElementsByTagName("code").item(0).getAttributes()
+							.getNamedItem("code").getNodeValue().equalsIgnoreCase("57059-8")) {
+						// Visit Summary Section Template
+						Node entryNode = eElement.getElementsByTagName("entry").item(0);
+
+						if(entryNode.getNodeType() == Node.ELEMENT_NODE) {
+							Element entryElement = (Element) entryNode;
+							Element organizerElement = (Element) entryElement.getElementsByTagName("organizer").item(0);
+
+							// Set the encounter date time
+							this.setEncounterDatetime(organizerElement.getElementsByTagName("effectiveTime").item(0)
+									.getAttributes().getNamedItem("value").getNodeValue());
+
+							for(int j = 0; j < organizerElement.getElementsByTagName("component").getLength(); j++){
+								Element componentElement = (Element) organizerElement.getElementsByTagName("component")
+										.item(j);
+
+								Element observationElement = (Element)componentElement.getElementsByTagName("observation")
+										.item(0);
+
+                                if (observationElement.getElementsByTagName("code").item(0).getAttributes()
+										.getNamedItem("code").getNodeValue().equals("856")) {
+									// Viral Load in CIEL
+									this.flowSheetSummary.setViralLoad(observationElement.getElementsByTagName("value")
+											.item(0).getAttributes().getNamedItem("value").getNodeValue());
+									this.obsNames.add("viralLoad");
+								} else if (observationElement.getElementsByTagName("code").item(0).getAttributes()
+										.getNamedItem("code").getNodeValue().equals("1169")) {
+									// Final HIV Status/Result in CIEL
+									this.flowSheetSummary.setFinalHIVStatus(observationElement.getElementsByTagName("value")
+											.item(0).getAttributes().getNamedItem("code").getNodeValue());
+									this.obsNames.add("finalHIVResult");
+								} else if (observationElement.getElementsByTagName("code").item(0).getAttributes()
+										.getNamedItem("code").getNodeValue().equals("159599")) {
+									// ART Start Date in CIEL
+									this.flowSheetSummary.setArtStartDate(observationElement.getElementsByTagName("value")
+											.item(0).getAttributes().getNamedItem("value").getNodeValue());
+									this.obsNames.add("artStartDate");
+								} else if (observationElement.getElementsByTagName("code").item(0).getAttributes()
+										.getNamedItem("code").getNodeValue().equals("5096")) {
+									// ART Follow Up Date in CIEL
+									this.flowSheetSummary.setFollowUpDate(observationElement.getElementsByTagName("value")
+											.item(0).getAttributes().getNamedItem("value").getNodeValue());
+									this.obsNames.add("artFollowUpDate");
+								} else if (observationElement.getElementsByTagName("code").item(0).getAttributes()
+		                                .getNamedItem("code").getNodeValue().equals("162240")) {
+	                                // ARV Regimen in CIEL
+	                                this.flowSheetSummary.setARTRegimen(observationElement.getElementsByTagName("value")
+			                                .item(0).getAttributes().getNamedItem("code").getNodeValue());
+	                                this.obsNames.add("arvRegimen");
+                                }
 							}
 						}
 					}
@@ -469,5 +529,33 @@ public class CDAEncounterDocument {
 
 			return patientBMI;
 		}
+	}
+
+	public class FlowSheetSummary {
+		private String finalHIVStatus;
+		private String viralLoad;
+		private String artStartDate;
+		private String artRegimen;
+		private String followUpDate;
+
+		public FlowSheetSummary(){
+
+		}
+
+		public String getFinalHIVStatus() {return this.finalHIVStatus; }
+		public void setFinalHIVStatus(String finalHIVStatus){ this.finalHIVStatus = finalHIVStatus; }
+
+		public String getViralLoad() { return this.viralLoad; }
+		public void setViralLoad(String viralLoad) { this.viralLoad = viralLoad; }
+
+		public String getArtStartDate() { return this.artStartDate; }
+		public void setArtStartDate(String artStartDate) { this.artStartDate = artStartDate; }
+
+		public String getARTRegimen() { return this.artRegimen; }
+		public void setARTRegimen(String artRegimen) { this.artRegimen = artRegimen; }
+
+		public String getFollowUpDate() { return this.followUpDate; }
+		public void setFollowUpDate(String followUpDate) { this.followUpDate = followUpDate; }
+
 	}
 }

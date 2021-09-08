@@ -208,7 +208,7 @@ public class BahmniEncounterController extends BaseRestController {
                 String FollowUp = getObs(
                         bahmniEncounterTransaction.getObservations());
 
-
+                // all follow up dates concepts in the forms
                 Map<String, String> followUp = new HashMap<>();
                 followUp.put("artfollowupUuid", "88489023-783b-4021-b7a9-05ca9877bf67");
                 followUp.put("tbfollowupUuid", "0850f585-be36-4458-b53f-f5520910b343");
@@ -217,15 +217,17 @@ public class BahmniEncounterController extends BaseRestController {
                 Iterator<Map.Entry<String,String>>  followUpIterator = followUp.entrySet().iterator();
 
                 Map<String, String> service = new HashMap<>();
-                service.put("0c8dfd62-776a-4ddd-bcee-f2570c0721fa", "746818ac-65a0-4d74-9609-ddb2c330a31b");
+                //the type of service determined by the form being field  service.put
+                service.put("03a7cac1-2562-4151-9f3e-8f07c6c94731", "0c8dfd62-776a-4ddd-bcee-f2570c0721fa");
+                service.put("746818ac-65a0-4d74-9609-ddb2c330a31b", "0c8dfd62-776a-4ddd-bcee-f2570c0721fa");
                 service.put("886757b6-52fd-45e6-bb55-f401176acd0c", "4276dcf6-0f21-4910-bac3-87ddc94f88c9");
                 service.put("e3d08a87-3e42-42cd-bf71-5e685b34e4a4", "059ff360-2089-4e3e-87f8-4a23c334ebbc");
 //              service.put("e3d08a87-3e42-42cd-bf71-5e685b34e4a4", "38ac3c12-f575-42b5-9d7c-0d03d154befc");
                 Iterator<Map.Entry<String,String>>  serviceIterator = service.entrySet().iterator();
 
-
                 Map<String, String> serviceType = new HashMap<>();
-                serviceType.put("257dcd02-e539-46fb-b61c-b23e413935c2", "746818ac-65a0-4d74-9609-ddb2c330a31b"); //hiv service point
+                serviceType.put("03a7cac1-2562-4151-9f3e-8f07c6c94731", "257dcd02-e539-46fb-b61c-b23e413935c2");
+                serviceType.put("746818ac-65a0-4d74-9609-ddb2c330a31b", "257dcd02-e539-46fb-b61c-b23e413935c2"); //hiv service point
                 serviceType.put("9586e036-d9b3-42f0-a724-95eb95c91897", "4276dcf6-0f21-4910-bac3-87ddc94f88c9");
                 serviceType.put("e142a2be-c4f3-4ac7-8a9a-2f49e139530c", "059ff360-2089-4e3e-87f8-4a23c334ebbc");
 //              serviceType.put("e142a2be-c4f3-4ac7-8a9a-2f49e139530c", "38ac3c12-f575-42b5-9d7c-0d03d154befc");
@@ -237,15 +239,15 @@ public class BahmniEncounterController extends BaseRestController {
                         if(followUpEntry.getValue().equals(FollowUp)){
                             while (serviceIterator.hasNext()) {
                                 Map.Entry serviceEntry = serviceIterator.next();
-                                if(serviceEntry.getValue().equals(appService)){
+                                if(serviceEntry.getKey().equals(appService)){
                                     appointmentService = appointmentServiceService
-                                        .getAppointmentServiceByUuid(serviceEntry.getKey().toString());
+                                        .getAppointmentServiceByUuid(serviceEntry.getValue().toString());
 
                                     while (serviceTypeIterator.hasNext()) {
                                         Map.Entry serviceTypeEntry = serviceTypeIterator.next();
-                                        if(serviceTypeEntry.getValue().equals(appService)){
+                                        if(serviceTypeEntry.getKey().equals(appService)){
                                             appointmentServiceType = getServiceTypeByUuid(appointmentService.getServiceTypes(true)
-                                                    , serviceTypeEntry.getKey().toString());
+                                                    , serviceTypeEntry.getValue().toString());
                                         }
                                     }
                                 }
