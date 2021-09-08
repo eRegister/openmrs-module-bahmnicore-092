@@ -92,6 +92,8 @@ public class BahmniSharedHealthRecordController extends BaseRestController {
 
     private static final String DATE_PATTERN_LONG = "yyyyMMddHHmm";
 
+    private static final String DATE_PATTERN_SHORT = "yyyyMMdd";
+
     private static final String DATE_PATTERN_LONG_TEST = "yyyyMMddHHmmssSSS";
 
     private EncounterTransactionMapper encounterTransactionMapper;
@@ -144,9 +146,11 @@ public class BahmniSharedHealthRecordController extends BaseRestController {
     /*@RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public List<AdhocQueryDocumentData> get(@RequestParam(value = "patientUUID", required = true) String patientUUID) {
+
         DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
         Date startDate = new Date();
         Date endDate = new Date();
+
         List<AdhocQueryDocumentData> response = xdsService.FindDcoumentsQuery(patientUUID, startDate, endDate);
         return response;
     }*/
@@ -180,12 +184,12 @@ public class BahmniSharedHealthRecordController extends BaseRestController {
         CDAEncounterDocument cdaEncounterDocument = new CDAEncounterDocument(response);
         cdaEncounterDocument.populateEncounterFromCDADocument();
 
-        // 6. Use the CDA Document output to create Visits, Encounters and Obervations for storage into OpenMRS DB
+        // 6. Use the CDA Document output to create Visits, Encounters and Observations for storage into OpenMRS DB
 
         DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN_LONG);
         DateFormat encounterDateFormart = new SimpleDateFormat(DATE_PATTERN_LONG_TEST);
 
-        // TODO: REMEMBER TO PUT IN CONTROLS TO CHECK WHETHER THE ENCOUNTER HAS ALREADY BEEN SAVED!!!
+        // TODO: REMEMBER TO ENFORCE CONTROLS TO CHECK WHETHER THE ENCOUNTER HAS ALREADY BEEN SAVED!!!
 
         try {
             List<Patient> patients = bahmniPatientService.get(cdaEncounterDocument.getPatientId(), true);
@@ -211,6 +215,7 @@ public class BahmniSharedHealthRecordController extends BaseRestController {
                 Visit existingVisit = visitService.getVisitByUuid(cdaEncounterDocument.getVisitUuid());
                 Encounter existingEncounter = encounterService.getEncounterByUuid(cdaEncounterDocument.getEncounterUuid());
 
+                // TODO: REMEMBER TO REMOVE THE "!= null" SINCE ITS FOR TESTING ON LOCAL INSTANCE
                 if(existingVisit == null && existingEncounter == null) {
                     visit.setLocation(location);
                     visit.setPatient(patient);
@@ -218,7 +223,7 @@ public class BahmniSharedHealthRecordController extends BaseRestController {
                     visit.setStopDatetime(dateFormat.parse(cdaEncounterDocument.getVisitStopDatetime().toString().substring(0, 12)));
                     visit.setEncounters(new HashSet());
                     visit.setUuid(cdaEncounterDocument.getVisitUuid());
-                    visit.setVisitType(visitService.getVisitTypeByUuid("cda0acfe-07f2-41f3-ab54-cdad1d3d452a"));
+                    visit.setVisitType(visitService.getVisitTypeByUuid("c23d6c9d-3f10-11e4-adec-0800271c1b75"));
 
                     Encounter encounter = new Encounter();
                     //encounter.setEncounterDatetime(encounterDateFormart.parse(cdaEncounterDocument.getEncounterDatetime()));
@@ -240,34 +245,57 @@ public class BahmniSharedHealthRecordController extends BaseRestController {
                         Obs obs = new Obs();
 
                         if (obsName.equalsIgnoreCase("height")) {
-                            concept = conceptService.getConcept("HEIGHT");
+                            concept = conceptService.getConceptByName("HEIGHT");
                             obs = generateObs(concept, location, patient, cdaEncounterDocument.getVitals().getHeight(),
                                     cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
                         } else if (obsName.equalsIgnoreCase("weight")) {
-                            concept = conceptService.getConcept("WEIGHT");
+                            concept = conceptService.getConceptByName("WEIGHT");
                             obs = generateObs(concept, location, patient, cdaEncounterDocument.getVitals().getWeight(),
                                     cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
                         } else if (obsName.equalsIgnoreCase("temperature")) {
-                            concept = conceptService.getConcept("Temperature");
+                            concept = conceptService.getConcept(134);
                             obs = generateObs(concept, location, patient, cdaEncounterDocument.getVitals().getTemperature(),
                                     cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
                         } else if (obsName.equalsIgnoreCase("systolic")) {
-                            concept = conceptService.getConcept("Systolic");
+                            concept = conceptService.getConcept(128);
                             obs = generateObs(concept, location, patient, cdaEncounterDocument.getVitals().getSystolicBP(),
                                     cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
                         } else if (obsName.equalsIgnoreCase("diastolic")) {
-                            concept = conceptService.getConcept("Diastolic");
+                            concept = conceptService.getConcept(131);
                             obs = generateObs(concept, location, patient, cdaEncounterDocument.getVitals().getDiastolicBP(),
                                     cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
+                        } else if (obsName.equalsIgnoreCase("viralLoad")) {
+                            concept = conceptService.getConceptByName("HIVTC, Viral Load");
+                            obs = generateObs(concept, location, patient, cdaEncounterDocument.getFlowSheetSummaryValues().getViralLoad(),
+                                    cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
+                        } else if (obsName.equalsIgnoreCase("finalHIVResult")) {
+                            concept = conceptService.getConceptByName("HTC, Final HIV status");
+                            obs = generateObs(concept, location, patient, cdaEncounterDocument.getFlowSheetSummaryValues().getFinalHIVStatus(),
+                                    cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
+                        } else if (obsName.equalsIgnoreCase("artStartDate")) {
+                            concept = conceptService.getConceptByName("HIVTC, ART start date");
+                            obs = generateObs(concept, location, patient, cdaEncounterDocument.getFlowSheetSummaryValues().getArtStartDate(),
+                                    cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
+                        } else if (obsName.equalsIgnoreCase("artFollowUpDate")) {
+                            concept = conceptService.getConceptByName("ART, Follow-up date");
+                            obs = generateObs(concept, location, patient, cdaEncounterDocument.getFlowSheetSummaryValues().getFollowUpDate(),
+                                    cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
+                        } else if (obsName.equalsIgnoreCase("arvRegimen")) {
+                            concept = conceptService.getConceptByName("HIVTC, ART Regimen");
+                            obs = generateObs(concept, location, patient, cdaEncounterDocument.getFlowSheetSummaryValues().getARTRegimen(),
+                                    cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
                         }
+
                         obsService.saveObs(obs, "From HIE");
                     }
                     // Create the BMI Obs
-                    Concept concept = conceptService.getConcept("BMI");
-                    Obs bmiObs = generateObs(concept, location, patient,
-                            cdaEncounterDocument.getVitals().getBMI().toString(),
-                            cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
-                    obsService.saveObs(bmiObs, "From HIE");
+                    if (cdaEncounterDocument.getVitals().getHeight() != null && cdaEncounterDocument.getVitals().getWeight() != null) {
+                        Concept concept = conceptService.getConcept("BMI");
+                        Obs bmiObs = generateObs(concept, location, patient,
+                                cdaEncounterDocument.getVitals().getBMI().toString(),
+                                cdaEncounterDocument.getEncounterDatetime(), savedEncounter);
+                        obsService.saveObs(bmiObs, "From HIE");
+                    }
                 } else {
                     document.setMessage(String.format("Document %s not imported. Related encounter and visit already exist.", documentId));
                     document.setIsSuccesful(false);
@@ -286,13 +314,20 @@ public class BahmniSharedHealthRecordController extends BaseRestController {
     private Obs generateObs(Concept concept, Location location, Patient patient
             , String value, String encounterDatetime, Encounter savedEncounter) throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN_LONG);
+        DateFormat dateFormatShort = new SimpleDateFormat(DATE_PATTERN_SHORT);
         Obs obs = new Obs();
         obs.setConcept(concept);
         obs.setUuid(UUID.randomUUID().toString());
         obs.setLocation(location);
         obs.setPerson(patient);
         obs.setObsDatetime(dateFormat.parse(encounterDatetime));
-        obs.setValueNumeric(Double.parseDouble(value));
+        if(concept.getDatatype().isDateTime() || concept.getDatatype().isDate()) {
+            obs.setValueDatetime(dateFormatShort.parse(value));
+        } else if (concept.getDatatype().isNumeric()) {
+            obs.setValueNumeric(Double.parseDouble(value));
+        } else if (concept.getDatatype().isCoded()) {
+            obs.setValueCoded(conceptService.getConceptByMapping(value, "CIEL"));
+        }
         obs.setEncounter(savedEncounter);
 
         return obs;
