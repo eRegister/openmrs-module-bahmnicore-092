@@ -110,6 +110,7 @@ public class PatientContext {
         this.additionalPatientIdentifiers = additionalPatientIdentifiers;
     }
 
+
     public void addAdditionalPatientIdentifier(String type, String value) {
         this.additionalPatientIdentifiers.put(type, value);
     }
