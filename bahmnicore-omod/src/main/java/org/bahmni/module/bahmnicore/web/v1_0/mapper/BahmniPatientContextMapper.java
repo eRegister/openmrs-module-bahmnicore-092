@@ -30,6 +30,7 @@ public class BahmniPatientContextMapper {
         patientContext.setGender(patient.getGender());
         patientContext.setIdentifier(patient.getPatientIdentifier(primaryIdentifierType).getIdentifier());
         patientContext.setUuid(patient.getUuid());
+        
 
         mapConfiguredPersonAttributes(patient, configuredPersonAttributes, patientContext);
         mapConfiguredProgramAttributes(patientProgram, configuredProgramAttributes, patientContext);
