@@ -73,6 +73,15 @@ public class BahmniXDSServiceImpl implements BahmniXDSService {
 		}
 	}
 
+	public String querySHRObs(String patient_identifier) {
+		Object adhocQueryService = this.applicationContext.getBean("xdsSender.XdsImportService");
+		try {
+			return (String)MethodUtils.invokeMethod(adhocQueryService, "retrieveStrSHRObs", new Object[] { patient_identifier });
+		} catch (NoSuchMethodException|IllegalAccessException|java.lang.reflect.InvocationTargetException e) {
+			throw new IllegalStateException("Unable to invoke REST query on shared health record.", e);
+		}
+	}
+
 	private String queryXdsRegistryString(){
 		// Using reflection as a quick hack to get around module dependencies
 		// No time to do anything else currently

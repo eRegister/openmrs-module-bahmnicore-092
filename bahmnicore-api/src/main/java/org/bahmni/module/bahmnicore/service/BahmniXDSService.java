@@ -12,4 +12,5 @@ import org.openmrs.module.xdssender.api.model.AdhocQueryDocumentData;
 public interface BahmniXDSService {
 	public List<AdhocQueryDocumentData> FindDocumentsQuery(String patientIdentifier, Date fromDate, Date toDate);
 	public String RetrieveDocumentSet(String documentId);
+	public String querySHRObs(String patient_identifier);
 }

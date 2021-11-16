@@ -4,6 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBElement;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang.StringUtils;
 import org.bahmni.module.bahmnicore.contract.encounter.data.AdhocQueryDocumentModel;
@@ -15,6 +18,7 @@ import org.bahmni.module.bahmnicore.service.BahmniPatientService;
 import org.bahmni.module.bahmnicore.service.BahmniXDSService;
 import org.bahmni.module.bahmnicore.web.v1_0.contract.CDADummyDoc;
 import org.bahmni.module.bahmnicore.web.v1_0.contract.CDAEncounterDocument;
+import org.bahmni.module.bahmnicore.web.v1_0.contract.SharedHealthRecordObsResponse;
 import org.bahmni.module.bahmnicore.web.v1_0.contract.SharedHealthRecordSearchParams;
 import org.dcm4chee.xds2.infoset.ihe.RetrieveDocumentSetResponseType;
 import org.dcm4chee.xds2.infoset.rim.AdhocQueryResponse;
@@ -154,6 +158,14 @@ public class BahmniSharedHealthRecordController extends BaseRestController {
         List<AdhocQueryDocumentData> response = xdsService.FindDcoumentsQuery(patientUUID, startDate, endDate);
         return response;
     }*/
+
+    @RequestMapping(method = {RequestMethod.GET}, value = {"summary"})
+    @ResponseBody
+    public List<SharedHealthRecordObsResponse> getSHRObs(@RequestParam(value = "patient_identifier", required = true) String patient_identifier) {
+        String jsonResponse = this.xdsService.querySHRObs(patient_identifier);
+        List<SharedHealthRecordObsResponse> response = mapShrObservations(jsonResponse);
+        return response;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
@@ -331,6 +343,50 @@ public class BahmniSharedHealthRecordController extends BaseRestController {
         obs.setEncounter(savedEncounter);
 
         return obs;
+    }
+
+    private List<SharedHealthRecordObsResponse> mapShrObservations(String jsonResponse) {
+        List<SharedHealthRecordObsResponse> responseList = new ArrayList<SharedHealthRecordObsResponse>();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node;
+
+        if(StringUtils.isNotBlank(jsonResponse)) {
+            try {
+                node = mapper.readTree(jsonResponse);
+                JsonNode results = node.get("results");
+
+                for(JsonNode result : results){
+                    String location = result.get("location").toString();
+                    if(location != "null") {
+                        SharedHealthRecordObsResponse response = new SharedHealthRecordObsResponse();
+                        response.setLocationName(result.get("location").get("name").asText().toString());
+                        String value = result.get("value").toString();
+                        if (value != "null") {
+                            response.setEncounterDate(result.get("obsDatetime").asText().toString());
+                            response.setObservationName(result.get("concept").get("display").asText().toString());
+                            String dataType = result.get("concept").get("datatype").get("display").asText().toString();
+                            if(dataType.equalsIgnoreCase("Coded")) {
+                                response.setObservationValue(result.get("value").get("display").asText().toString());
+                            } else if (dataType.equalsIgnoreCase("Date")
+                                    || dataType.equalsIgnoreCase("Numeric")
+                                    || dataType.equalsIgnoreCase("Datetime")) {
+                                response.setObservationValue(result.get("value").asText().toString());
+                            }
+                        } else if (result.get("groupMembers") != null) {
+
+                        }
+                        responseList.add(response);
+                    }
+                }
+            } catch(com.fasterxml.jackson.core.JsonProcessingException e){
+
+            } catch(java.io.IOException e){
+
+            }
+        }
+
+        return responseList;
     }
 
     private Date getDateFromString(String birthdate) {
