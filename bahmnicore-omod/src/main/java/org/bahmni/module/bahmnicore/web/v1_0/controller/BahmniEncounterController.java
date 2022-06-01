@@ -78,13 +78,13 @@ public class BahmniEncounterController extends BaseRestController {
     private EncounterTransactionMapper encounterTransactionMapper;
     private BahmniEncounterTransactionService bahmniEncounterTransactionService;
     private BahmniEncounterTransactionMapper bahmniEncounterTransactionMapper;
-	
-	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
-	
-	private static final String TIME_PATTERN = "HH:mm";
-	
-	private static final String DATE_PATTERN = "yyyy-MM-dd";
-		
+
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
+
+    private static final String TIME_PATTERN = "HH:mm";
+
+    private static final String DATE_PATTERN = "yyyy-MM-dd";
+
     @Autowired
     LocationService locationService;
 
@@ -93,6 +93,7 @@ public class BahmniEncounterController extends BaseRestController {
 
     @Autowired
     PatientService patientService;
+
 
     @Autowired
     AppointmentServiceService appointmentServiceService;
@@ -156,7 +157,7 @@ public class BahmniEncounterController extends BaseRestController {
     @Transactional
     public BahmniEncounterTransaction update(@RequestBody BahmniEncounterTransaction bahmniEncounterTransaction) {
         setUuidsForObservations(bahmniEncounterTransaction.getObservations());
-		//BahmniObservation artFollowUpObservation = getFollowUpDateObservationRecursive(
+        //BahmniObservation artFollowUpObservation = getFollowUpDateObservationRecursive(
         //        bahmniEncounterTransaction.getObservations()
         //        , "ART, Follow-up date");
 
@@ -179,6 +180,7 @@ public class BahmniEncounterController extends BaseRestController {
     private AppointmentServiceType getServiceTypeByUuid(Set<AppointmentServiceType> serviceTypes, String serviceTypeUuid) {
         return serviceTypes.stream()
                 .filter(avb -> avb.getUuid().equals(serviceTypeUuid)).findAny().get();
+
     }
 
     private void createAppointmentForARTPatient(BahmniObservation bahmniObs, BahmniEncounterTransaction bahmniEncounterTransaction){
@@ -193,21 +195,18 @@ public class BahmniEncounterController extends BaseRestController {
                 endDate = dateFormat.parse(bahmniObs.getValueAsString());
 
                 Appointment appointment = new Appointment();
-
                 // Get the current location
                 Location location = locationService.getLocationByUuid(bahmniEncounterTransaction.getLocationUuid());
-
                 // For a particular patient
                 appointment.setPatient(patientService.getPatientByUuid(bahmniEncounterTransaction.getPatientUuid()));
-
+                String locationuuid = bahmniEncounterTransaction.getLocationUuid();
                 AppointmentService appointmentService = null;
                 AppointmentServiceType appointmentServiceType = null;
-
+                List<AppointmentService> appoitments_ =  appointmentServiceService.getAllAppointmentServices(true);
                 String appService = getAppointmentService(
                         bahmniEncounterTransaction.getObservations());
                 String FollowUp = getObs(
                         bahmniEncounterTransaction.getObservations());
-
                 // all follow up dates concepts in the forms
                 Map<String, String> followUp = new HashMap<>();
                 followUp.put("artfollowupUuid", "88489023-783b-4021-b7a9-05ca9877bf67");
@@ -217,43 +216,27 @@ public class BahmniEncounterController extends BaseRestController {
                 Iterator<Map.Entry<String,String>>  followUpIterator = followUp.entrySet().iterator();
 
                 Map<String, String> service = new HashMap<>();
-                //the type of service determined by the form being field  service.put
-                service.put("03a7cac1-2562-4151-9f3e-8f07c6c94731", "0c8dfd62-776a-4ddd-bcee-f2570c0721fa");
-                service.put("746818ac-65a0-4d74-9609-ddb2c330a31b", "0c8dfd62-776a-4ddd-bcee-f2570c0721fa");
-                service.put("4276dcf6-0f21-4910-bac3-87ddc94f88c9", "886757b6-52fd-45e6-bb55-f401176acd0c");
-                service.put("059ff360-2089-4e3e-87f8-4a23c334ebbc", "e3d08a87-3e42-42cd-bf71-5e685b34e4a4");
-//              service.put("e3d08a87-3e42-42cd-bf71-5e685b34e4a4", "38ac3c12-f575-42b5-9d7c-0d03d154befc");
+                //the type of service determined by the form being filled and the service from appointment service table
+                // we could use appointment service variable on the left and use location.uuid on the right
+                service.put(appService, locationuuid);
                 Iterator<Map.Entry<String,String>>  serviceIterator = service.entrySet().iterator();
-
+//                Set<AppointmentServiceType>  servicesAll = appointmentService.getServiceTypes(true);
                 Map<String, String> serviceType = new HashMap<>();
-                serviceType.put("03a7cac1-2562-4151-9f3e-8f07c6c94731", "257dcd02-e539-46fb-b61c-b23e413935c2");
-                serviceType.put("746818ac-65a0-4d74-9609-ddb2c330a31b", "257dcd02-e539-46fb-b61c-b23e413935c2"); //hiv service point
-                serviceType.put("4276dcf6-0f21-4910-bac3-87ddc94f88c9", "9586e036-d9b3-42f0-a724-95eb95c91897");
-                serviceType.put("e142a2be-c4f3-4ac7-8a9a-2f49e139530c", "059ff360-2089-4e3e-87f8-4a23c334ebbc");
-//              serviceType.put("e142a2be-c4f3-4ac7-8a9a-2f49e139530c", "38ac3c12-f575-42b5-9d7c-0d03d154befc");
-                Iterator<Map.Entry<String,String>>  serviceTypeIterator = serviceType.entrySet().iterator();
 
-                    while (followUpIterator.hasNext()) {
-                        Map.Entry followUpEntry = followUpIterator.next();
+                while (followUpIterator.hasNext()) {
+                    Map.Entry followUpEntry = followUpIterator.next();
 
-                        if(followUpEntry.getValue().equals(FollowUp)){
-                            while (serviceIterator.hasNext()) {
-                                Map.Entry serviceEntry = serviceIterator.next();
-                                if(serviceEntry.getKey().equals(appService)){
-                                    appointmentService = appointmentServiceService
+                    if(followUpEntry.getValue().equals(FollowUp)){
+                        while (serviceIterator.hasNext()) {
+                            Map.Entry serviceEntry = serviceIterator.next();
+                            if(serviceEntry.getKey().equals(appService)){
+                                appointmentService = appointmentServiceService
                                         .getAppointmentServiceByUuid(serviceEntry.getValue().toString());
-
-                                    while (serviceTypeIterator.hasNext()) {
-                                        Map.Entry serviceTypeEntry = serviceTypeIterator.next();
-                                        if(serviceTypeEntry.getKey().equals(appService)){
-                                            appointmentServiceType = getServiceTypeByUuid(appointmentService.getServiceTypes(true)
-                                                    , serviceTypeEntry.getValue().toString());
-                                        }
-                                    }
-                                }
+                                appointmentServiceType = (AppointmentServiceType)appointmentService.getServiceTypes(true).toArray()[0];
                             }
                         }
                     }
+                }
 
                 // Set the appointment service type
                 appointment.setServiceType(appointmentServiceType);
@@ -349,7 +332,6 @@ public class BahmniEncounterController extends BaseRestController {
                     // Get all appointments in the future compared to the retrospective encounter date
                     List<Appointment> foundAppointments = appointmentsService.getAllAppointmentsInDateRange(
                             bahmniEncounterTransaction.getEncounterDateTime(), new Date());
-
                     if (foundAppointments.iterator().hasNext()) {
                         // Can only have one and only one future appointment for the patient
                         // Sort the list in ascending order, smallest date in future compared to retrospective
