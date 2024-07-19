@@ -58,14 +58,14 @@
         <providermanagementVersion>2.5.0</providermanagementVersion>
     </properties>
 
-   
-<distributionManagement>
-       <snapshotRepository>
-           <id>repo.mybahmni.org</id>
-           <name>bahmni-artifactory-snapshots</name>
-           <url>s3://repo.mybahmni.org/artifactory/snapshot</url>
-       </snapshotRepository>
-   </distributionManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>repo.mybahmni.org</id>
+            <name>bahmni-artifactory-snapshots</name>
+            <url>s3://repo.mybahmni.org/artifactory/snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -213,10 +213,10 @@
                 <scope>test</scope>
             </dependency>
             <!--<dependency>-->
-                <!--<groupId>org.openmrs.module</groupId>-->
-                <!--<artifactId>reportingcompatibility-api</artifactId>-->
-                <!--<version>${reportingCompatiblityModuleVersion}</version>-->
-                <!--<scope>test</scope>-->
+            <!--<groupId>org.openmrs.module</groupId>-->
+            <!--<artifactId>reportingcompatibility-api</artifactId>-->
+            <!--<version>${reportingCompatiblityModuleVersion}</version>-->
+            <!--<scope>test</scope>-->
             <!--</dependency>-->
             <dependency>
                 <groupId>org.openmrs.module</groupId>
@@ -245,10 +245,10 @@
             </dependency>
             <!-- APPOINTMENTS MODULE DEPENDENCY -->
             <dependency>
-                    <groupId>org.openmrs.module</groupId>
-                    <artifactId>appointments-api</artifactId>
-                    <version>1.1-SNAPSHOT</version>
-                    <scope>provided</scope>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>appointments-api</artifactId>
+                <version>1.1-SNAPSHOT</version>
+                <scope>provided</scope>
             </dependency>
             <!-- APPOINTMENTS MODULE DEPENDENCY -->
             <!-- XDS Sender Dependency -->
@@ -465,7 +465,7 @@
 
         </dependencies>
     </dependencyManagement>
-    
+
     <dependencies>
         <dependency>
             <groupId>log4j</groupId>
@@ -537,15 +537,41 @@
                         </excludes>
                     </configuration>
                 </plugin>
+                <!--                &lt;!&ndash; Moletsane &ndash;&gt;-->
+                <!--                <plugin>-->
+                <!--                    <groupId>org.codehaus.mojo</groupId>-->
+                <!--                    <artifactId>exec-maven-plugin</artifactId>-->
+                <!--                    <version>3.0.0</version>-->
+                <!--                    <executions>-->
+                <!--                        <execution>-->
+                <!--                            <phase>initialize</phase>-->
+                <!--                            <goals>-->
+                <!--                                <goal>exec</goal>-->
+                <!--                            </goals>-->
+                <!--                            <configuration>-->
+                <!--                                <executable>sh</executable>-->
+                <!--                                <arguments>-->
+                <!--                                    <argument>./sync_gems.sh</argument>-->
+                <!--                                </arguments>-->
+                <!--                            </configuration>-->
+                <!--                        </execution>-->
+                <!--                    </executions>-->
+                <!--                </plugin>-->
+
             </plugins>
         </pluginManagement>
         <extensions>
-           <extension>
-               <groupId>org.kuali.maven.wagons</groupId>
-               <artifactId>maven-s3-wagon</artifactId>
-               <version>1.2.1</version>
-           </extension>
-       </extensions>
+            <extension>
+                <groupId>org.kuali.maven.wagons</groupId>
+                <artifactId>maven-s3-wagon</artifactId>
+                <version>1.2.1</version>
+            </extension>
+            <!--            <extension>-->
+            <!--                <groupId>io.takari.polyglot</groupId>-->
+            <!--                <artifactId>polyglot-ruby</artifactId>-->
+            <!--                <version>0.4.6</version>-->
+            <!--            </extension>-->
+        </extensions>
     </build>
 
     <profiles>
@@ -604,7 +630,7 @@
         </repository>
         <repository>
             <id>central</id>
-            <url>http://repo1.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
             <name>Repository for dependencies</name>
             <snapshots>
                 <enabled>true</enabled>
@@ -614,7 +640,7 @@
         <repository>
             <id>spring-maven-release</id>
             <name>Spring Maven Release Repository</name>
-            <url>http://maven.springframework.org/release</url>
+            <url>https://maven.springframework.org/release</url>
             <releases>
                 <updatePolicy>interval:10080</updatePolicy>
             </releases>
@@ -632,7 +658,7 @@
             <name>The "public-jboss" repository group provides a combined view all JBoss community project artifacts
             </name>
             <layout>default</layout>
-            <url>http://repository.jboss.org/nexus/content/groups/public-jboss</url>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss</url>
             <releases>
                 <updatePolicy>interval:10080</updatePolicy>
             </releases>
@@ -640,7 +666,7 @@
         <repository>
             <id>spring-repo</id>
             <name>Spring Maven Repository</name>
-            <url>http://maven.springframework.org/milestone</url>
+            <url>https://maven.springframework.org/milestone</url>
             <releases>
                 <updatePolicy>interval:10080</updatePolicy>
             </releases>
@@ -651,59 +677,61 @@
         <repository>
             <id>openmrs-repo</id>
             <name>OpenMRS Nexus Repository</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+            <url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
             <releases>
                 <updatePolicy>always</updatePolicy>
             </releases>
         </repository>
-       <repository>
-           <id>repo.mybahmni.org</id>
-           <name>bahmni-artifactory-snapshots</name>
-           <url>http://repo.mybahmni.org.s3.amazonaws.com/artifactory/snapshot</url>
-           <snapshots>
-               <updatePolicy>always</updatePolicy>
-           </snapshots>
-       </repository>
-    <repository>
-          <id>repo.mybahmni.org-release</id>
-          <name>bahmni-artifactory-release</name>
-          <url>http://repo.mybahmni.org.s3.amazonaws.com/artifactory/release</url>
-      </repository>      
+        <!--        Obsolete -->
         <repository>
             <id>rubygems-releases</id>
-            <url>http://rubygems-proxy.torquebox.org/releases</url>
+            <url>https://rubygems-proxy.torquebox.org/releases</url>
         </repository>
+        <repository>
+            <id>repo.mybahmni.org</id>
+            <name>bahmni-artifactory-snapshots</name>
+            <url>https://repo.mybahmni.org.s3.amazonaws.com/artifactory/snapshot</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>repo.mybahmni.org-release</id>
+            <name>bahmni-artifactory-release</name>
+            <url>https://repo.mybahmni.org.s3.amazonaws.com/artifactory/release</url>
+        </repository>
+
         <!-- dcm4chee and evereset framework repository -->
         <repository>
             <id>dcm4che</id>
-            <url>http://dcm4che.org/maven2</url>
+            <url>https://dcm4che.org/maven2</url>
         </repository>
         <repository>
             <id>marc-te-main</id>
-            <url>http://te.marc-hi.ca/mvn</url>
+            <url>https://te.marc-hi.ca/mvn</url>
         </repository>
         <!-- dcm4chee and evereset framework repository -->
     </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>central</id>
-            <url>http://repo1.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
             <name>Repository for plugins</name>
         </pluginRepository>
         <pluginRepository>
             <id>spring-maven-release</id>
             <name>Spring Maven Release Repository</name>
-            <url>http://maven.springframework.org/release</url>
+            <url>https://maven.springframework.org/release</url>
         </pluginRepository>
         <pluginRepository>
             <id>spring-maven-milestone</id>
             <name>Spring Maven Milestone Repository</name>
-            <url>http://maven.springframework.org/milestone</url>
+            <url>https://maven.springframework.org/milestone</url>
         </pluginRepository>
         <pluginRepository>
             <id>openmrs-repo</id>
             <name>OpenMRS Nexus Repository</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+            <url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
