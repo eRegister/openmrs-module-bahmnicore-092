@@ -4482,7 +4482,7 @@
             <column name="appointment_service_type_uuid" value="9586e036-d9b3-42f0-a724-95eb95c91897"/>
         </insert>
     </changeSet>
-    <changeSet id="2024-07-18-1801" author="Moletsane">
+    <changeSet id="2024-07-19-1801" author="Moletsane">
         <preConditions onFail="MARK_RAN">
             <and>
                 <tableExists tableName="obs_form_service_type_mapping"/>
@@ -4515,7 +4515,7 @@
         <!--        PNC-->
         <insert tableName="obs_form_service_type_mapping">
             <column name="obs_form_concept_uuid" value="059ff360-2089-4e3e-87f8-4a23c334ebbc"/>
-            <column name="appointment_service_type_uuid" value="059ff360-2089-4e3e-87f8-4a23c334ebbc"/>
+            <column name="appointment_service_type_uuid" value="9a05d9d6-3903-4a4f-96ec-fea41d288239"/>
         </insert>
         <!--        VMMC-->
         <insert tableName="obs_form_service_type_mapping">
@@ -4526,6 +4526,21 @@
         <insert tableName="obs_form_service_type_mapping">
             <column name="obs_form_concept_uuid" value="c6cf97df-eb00-43a7-9474-ff3e01fcb5b0"/>
             <column name="appointment_service_type_uuid" value="11608042-28c7-4d49-9b4d-3c4038914e53"/>
+        </insert>
+    </changeSet>
+    <changeSet id="2024-07-28-1920" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="obs_form_service_type_mapping"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM obs_form_service_type_mapping where obs_form_concept_uuid="fad5daa8-8e80-40f7-ae6f-1bb1fc829e07"
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <!--        Under5-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="fad5daa8-8e80-40f7-ae6f-1bb1fc829e07"/>
+            <column name="appointment_service_type_uuid" value="292487c1-dbb0-484a-9f90-cf565ea48fe7"/>
         </insert>
     </changeSet>
     <changeSet id="2024-07-19-0049" author="Moletsane">
@@ -4561,7 +4576,7 @@
             <where>appointment_service_id in (4,5)</where>
         </update>
     </changeSet>
-    <changeSet id="2024-07-18-2220" author="Moletsane">
+    <changeSet id="2024-07-19-2220" author="Moletsane">
         <preConditions onFail="MARK_RAN">
             <and>
                 <tableExists tableName="appointment_service"/>
@@ -4615,7 +4630,7 @@
         </insert>
         <!--        HEI -->
         <insert tableName="appointment_service">
-            <column name="appointment_service_id" value="9"/>
+            <column name="appointment_service_id" value="10"/>
             <column name="name" value="HEI Program"/>
             <column name="description" value="Exposed Infant Monitoring Program"/>
             <column name="location_id" value="18"/>
@@ -4628,7 +4643,7 @@
         </insert>
         <!--        CXCA -->
         <insert tableName="appointment_service">
-            <column name="appointment_service_id" value="10"/>
+            <column name="appointment_service_id" value="11"/>
             <column name="name" value="CXCA Screening"/>
             <column name="description" value="Cervical Cancer Program Service"/>
             <column name="location_id" value="18"/>
@@ -4641,7 +4656,7 @@
         </insert>
         <!--        FP -->
         <insert tableName="appointment_service">
-            <column name="appointment_service_id" value="11"/>
+            <column name="appointment_service_id" value="12"/>
             <column name="name" value="Family Planning"/>
             <column name="description" value="Family Planning Service"/>
             <column name="location_id" value="18"/>
@@ -4666,7 +4681,30 @@
             <column name="uuid" value="91d04d20-338b-43df-8ee9-89038a3e1c84"/>
         </insert>
     </changeSet>
-    <changeSet id="2024-07-18-2315" author="Moletsane">
+    <changeSet id="2024-07-28-1940" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+        <and>
+            <tableExists tableName="appointment_service"/>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM appointment_service where uuid="7da17e79-6161-46f3-9c06-98bd06539fa5"
+            </sqlCheck>
+        </and>
+        </preConditions>
+        <!--        Under5 -->
+        <insert tableName="appointment_service">
+            <column name="appointment_service_id" value="9"/>
+            <column name="name" value="Under5 Program"/>
+            <column name="description" value="Under5 Program Service"/>
+            <column name="location_id" value="18"/>
+            <column name="speciality_id" value="1"/>
+            <column name="color" value="#006400"/>
+            <column name="date_created" value="2024-07-12 19:08:27"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="7da17e79-6161-46f3-9c06-98bd06539fa5"/>
+        </insert>
+    </changeSet>
+    <changeSet id="2024-07-19-2315" author="Moletsane">
         <preConditions onFail="MARK_RAN">
             <and>
                 <tableExists tableName="appointment_service_type"/>
@@ -4682,7 +4720,7 @@
         <!--        CXCA -->
         <insert tableName="appointment_service_type">
             <column name="appointment_service_type_id" value="23"/>
-            <column name="appointment_service_id" value="10"/>
+            <column name="appointment_service_id" value="11"/>
             <column name="name" value="Follow up"/>
             <column name="duration_mins" value="15"/>
             <column name="date_created" value="2024-07-12 19:25:04"/>
@@ -4704,7 +4742,7 @@
         <!--        HEI -->
         <insert tableName="appointment_service_type">
             <column name="appointment_service_type_id" value="26"/>
-            <column name="appointment_service_id" value="9"/>
+            <column name="appointment_service_id" value="10"/>
             <column name="name" value="Follow up"/>
             <column name="duration_mins" value="15"/>
             <column name="date_created" value="2024-07-12 19:25:04"/>
@@ -4748,13 +4786,34 @@
         <!--        FP -->
         <insert tableName="appointment_service_type">
             <column name="appointment_service_type_id" value="31"/>
-            <column name="appointment_service_id" value="11"/>
+            <column name="appointment_service_id" value="12"/>
             <column name="name" value="Follow up"/>
             <column name="duration_mins" value="15"/>
             <column name="date_created" value="2024-07-12 19:25:04"/>
             <column name="creator" value="4"/>
             <column name="voided" value="0"/>
             <column name="uuid" value="11608042-28c7-4d49-9b4d-3c4038914e53"/>
+        </insert>
+    </changeSet>
+    <changeSet id="2024-07-28-1945" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="appointment_service_type"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM appointment_service_type where uuid="292487c1-dbb0-484a-9f90-cf565ea48fe7"
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <!--        Under5 -->
+        <insert tableName="appointment_service_type">
+            <column name="appointment_service_type_id" value="32"/>
+            <column name="appointment_service_id" value="9"/>
+            <column name="name" value="Follow up"/>
+            <column name="duration_mins" value="15"/>
+            <column name="date_created" value="2024-07-12 19:25:04"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="292487c1-dbb0-484a-9f90-cf565ea48fe7"/>
         </insert>
     </changeSet>
 </databaseChangeLog>
