@@ -192,8 +192,6 @@ public class BahmniEncounterController extends BaseRestController {
         if(bahmniObs != null){
             // The current encounter has a follow up date
 
-            String message = "Nothing for message";
-            String message1 = "Nothing for message1";
             try {
                 startDate = dateFormat.parse(bahmniObs.getValueAsString());
                 endDate = dateFormat.parse(bahmniObs.getValueAsString());
@@ -208,58 +206,6 @@ public class BahmniEncounterController extends BaseRestController {
 
                 AppointmentService appointmentService = null;
                 AppointmentServiceType appointmentServiceType = null;
-
-//                String appService = getAppointmentService(
-//                        bahmniEncounterTransaction.getObservations());
-//                String FollowUp = getObs(
-//                        bahmniEncounterTransaction.getObservations());
-
-//                // all follow up dates concepts in the forms
-//                Map<String, String> followUp = new HashMap<>();
-//                followUp.put("artfollowupUuid", "88489023-783b-4021-b7a9-05ca9877bf67");
-//                followUp.put("tbfollowupUuid", "0850f585-be36-4458-b53f-f5520910b343");
-////              followUp.put("ancfollowupUuid", "96b7bcbb-a6c9-4648-bce3-c662411dab7b");
-//                followUp.put("pncfollowupUuid", "7ccb96a9-f6bb-426b-ae59-9746ccd8681e");
-//                Iterator<Map.Entry<String,String>>  followUpIterator = followUp.entrySet().iterator();
-//
-//                Map<String, String> service = new HashMap<>();
-//                //the type of service determined by the form being field  service.put
-//                service.put("03a7cac1-2562-4151-9f3e-8f07c6c94731", "0c8dfd62-776a-4ddd-bcee-f2570c0721fa");
-//                service.put("746818ac-65a0-4d74-9609-ddb2c330a31b", "0c8dfd62-776a-4ddd-bcee-f2570c0721fa");
-//                service.put("4276dcf6-0f21-4910-bac3-87ddc94f88c9", "886757b6-52fd-45e6-bb55-f401176acd0c");
-//                service.put("059ff360-2089-4e3e-87f8-4a23c334ebbc", "e3d08a87-3e42-42cd-bf71-5e685b34e4a4");
-////              service.put("e3d08a87-3e42-42cd-bf71-5e685b34e4a4", "38ac3c12-f575-42b5-9d7c-0d03d154befc");
-//                Iterator<Map.Entry<String,String>>  serviceIterator = service.entrySet().iterator();
-//
-//                Map<String, String> serviceType = new HashMap<>();
-//                serviceType.put("03a7cac1-2562-4151-9f3e-8f07c6c94731", "257dcd02-e539-46fb-b61c-b23e413935c2");
-//                serviceType.put("746818ac-65a0-4d74-9609-ddb2c330a31b", "257dcd02-e539-46fb-b61c-b23e413935c2"); //hiv service point
-//                serviceType.put("4276dcf6-0f21-4910-bac3-87ddc94f88c9", "9586e036-d9b3-42f0-a724-95eb95c91897");
-//                serviceType.put("e142a2be-c4f3-4ac7-8a9a-2f49e139530c", "059ff360-2089-4e3e-87f8-4a23c334ebbc");
-////              serviceType.put("e142a2be-c4f3-4ac7-8a9a-2f49e139530c", "38ac3c12-f575-42b5-9d7c-0d03d154befc");
-//                Iterator<Map.Entry<String,String>>  serviceTypeIterator = serviceType.entrySet().iterator();
-//
-//                    while (followUpIterator.hasNext()) {
-//                        Map.Entry followUpEntry = followUpIterator.next();
-//
-//                        if(followUpEntry.getValue().equals(FollowUp)){
-//                            while (serviceIterator.hasNext()) {
-//                                Map.Entry serviceEntry = serviceIterator.next();
-//                                if(serviceEntry.getKey().equals(appService)){
-//                                    appointmentService = appointmentServiceService
-//                                        .getAppointmentServiceByUuid(serviceEntry.getValue().toString());
-//
-//                                    while (serviceTypeIterator.hasNext()) {
-//                                        Map.Entry serviceTypeEntry = serviceTypeIterator.next();
-//                                        if(serviceTypeEntry.getKey().equals(appService)){
-//                                            appointmentServiceType = getServiceTypeByUuid(appointmentService.getServiceTypes(true)
-//                                                    , serviceTypeEntry.getValue().toString());
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
 
                 String obsFormUuid = bahmniEncounterTransaction.getObservations().stream().findFirst().get().getConceptUuid();
 
@@ -390,8 +336,6 @@ public class BahmniEncounterController extends BaseRestController {
                 }
             } catch (ParseException e) {
                 // Use the openmrs logger to log the exception
-                System.out.println(message + "\n" + message1);
-                System.out.println("\n\n" + e);
             }
         }
     }
