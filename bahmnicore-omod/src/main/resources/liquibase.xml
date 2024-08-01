@@ -4437,4 +4437,383 @@
             <column name="uuid" valueComputed=" uuid() "/>
         </insert>
     </changeSet>
+    <changeSet id="2024-07-17-1130" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="obs_form_service_type_mapping" />
+            </not>
+        </preConditions>
+        <createTable tableName="obs_form_service_type_mapping">
+            <column name="mapping_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="obs_form_concept_uuid" type="varchar(38)"><constraints nullable="false" /></column>
+            <column name="appointment_service_type_uuid" type="varchar(38)"><constraints nullable="false" /></column>
+        </createTable>
+    </changeSet>
+<!--    <changeSet id="2024-07-18" author="Alphonce">-->
+<!--        <al tableName="obs_form_service_type_mapping">-->
+<!--            <column name="name" value="Bahmni Id"/>-->
+<!--            <where>name='JSS'</where>-->
+<!--        </al>-->
+<!--    </changeSet>-->
+    <changeSet id="2024-07-17-1200" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="obs_form_service_type_mapping"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM obs_form_service_type_mapping
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <!--        ART intake-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="03a7cac1-2562-4151-9f3e-8f07c6c94731"/>
+            <column name="appointment_service_type_uuid" value="257dcd02-e539-46fb-b61c-b23e413935c2"/>
+        </insert>
+        <!--        ART Followup-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="746818ac-65a0-4d74-9609-ddb2c330a31b"/>
+            <column name="appointment_service_type_uuid" value="257dcd02-e539-46fb-b61c-b23e413935c2"/>
+        </insert>
+        <!--        TB Followup-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="4276dcf6-0f21-4910-bac3-87ddc94f88c9"/>
+            <column name="appointment_service_type_uuid" value="9586e036-d9b3-42f0-a724-95eb95c91897"/>
+        </insert>
+    </changeSet>
+    <changeSet id="2024-07-19-1801" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="obs_form_service_type_mapping"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM obs_form_service_type_mapping where obs_form_concept_uuid in
+                    ("7567a7f3-8e46-4534-8181-bdc02fbad252", "d46f29c6-7385-4b4d-80a9-5e35cc7b9619")
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <!--        CXCA -->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="7567a7f3-8e46-4534-8181-bdc02fbad252"/>
+            <column name="appointment_service_type_uuid" value="2b21baaa-1997-425e-b8c1-6e0a035e47a0"/>
+        </insert>
+        <!--        PrEP Followup-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="d46f29c6-7385-4b4d-80a9-5e35cc7b9619"/>
+            <column name="appointment_service_type_uuid" value="ad0b9c96-4455-4ca5-884e-8b979938cf87"/>
+        </insert>
+        <!--        HEI-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="3247dc3c-64e4-4800-8f42-ede6346f89d2"/>
+            <column name="appointment_service_type_uuid" value="82c8f11a-f3fb-43da-a20d-d45620df6d0d"/>
+        </insert>
+        <!--        ANC-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="17f1eb6b-446a-4e93-8e9d-de8bb4e8181c"/>
+            <column name="appointment_service_type_uuid" value="49c96bab-ee29-4c71-bba5-8de7dc8b72bf"/>
+        </insert>
+        <!--        PNC-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="059ff360-2089-4e3e-87f8-4a23c334ebbc"/>
+            <column name="appointment_service_type_uuid" value="9a05d9d6-3903-4a4f-96ec-fea41d288239"/>
+        </insert>
+        <!--        VMMC-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="e3bc5078-130d-4ac1-914b-725dff00f9b4"/>
+            <column name="appointment_service_type_uuid" value="512d05f5-faaa-4eb2-823c-4459ccd1efa7"/>
+        </insert>
+        <!--        FP-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="c6cf97df-eb00-43a7-9474-ff3e01fcb5b0"/>
+            <column name="appointment_service_type_uuid" value="11608042-28c7-4d49-9b4d-3c4038914e53"/>
+        </insert>
+    </changeSet>
+    <changeSet id="2024-07-28-1920" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="obs_form_service_type_mapping"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM obs_form_service_type_mapping where obs_form_concept_uuid="fad5daa8-8e80-40f7-ae6f-1bb1fc829e07"
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <!--        Under5-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="fad5daa8-8e80-40f7-ae6f-1bb1fc829e07"/>
+            <column name="appointment_service_type_uuid" value="292487c1-dbb0-484a-9f90-cf565ea48fe7"/>
+        </insert>
+    </changeSet>
+    <changeSet id="2024-07-19-0049" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="appointment_service"/>
+                <not>
+                    <sqlCheck expectedResult="0">
+                        SELECT COUNT(*) FROM appointment_service where appointment_service_id in (4,5)
+                    </sqlCheck>
+                </not>
+            </and>
+        </preConditions>
+        <update tableName="appointment_service">
+            <column name="voided" value="1"/>
+            <where>appointment_service_id in (4,5)</where>
+        </update>
+    </changeSet>
+    <changeSet id="2024-07-19-0057" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="appointment_service"/>
+                <not>
+                    <sqlCheck expectedResult="0">
+                        SELECT COUNT(*) FROM appointment_service_type where appointment_service_id in
+                        (4,5)
+                    </sqlCheck>
+                </not>
+            </and>
+        </preConditions>
+        <update tableName="appointment_service_type">
+            <column name="voided" value="1"/>
+            <where>appointment_service_id in (4,5)</where>
+        </update>
+    </changeSet>
+    <changeSet id="2024-07-19-2220" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="appointment_service"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM appointment_service where uuid in
+                    ("6748e698-f65f-40b1-9423-62b537487675", "f593c7bb-8d7d-474a-8d20-cb6be5e874bd",
+                    "3eae28bf-ea30-460f-88e8-2ed3d7a9f356","a8c2f49e-25b7-4de6-8222-f2d348a0cd1b",
+                    "381299a7-4987-468a-9f23-93c19a1f98fc","91d04d20-338b-43df-8ee9-89038a3e1c84",
+                    "a0f9a771-a57c-43d0-b8cd-9f808739da8f")
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <!--        PrEP -->
+        <insert tableName="appointment_service">
+            <column name="appointment_service_id" value="6"/>
+            <column name="name" value="PrEP Service"/>
+            <column name="description" value="PrEP Program Service"/>
+            <column name="location_id" value="16"/>
+            <column name="speciality_id" value="1"/>
+            <column name="color" value="#006400"/>
+            <column name="date_created" value="2024-07-12 19:08:27"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="f593c7bb-8d7d-474a-8d20-cb6be5e874bd"/>
+        </insert>
+        <!--        ANC -->
+        <insert tableName="appointment_service">
+            <column name="appointment_service_id" value="7"/>
+            <column name="name" value="ANC Program"/>
+            <column name="description" value="ANC Program Service"/>
+            <column name="location_id" value="18"/>
+            <column name="speciality_id" value="1"/>
+            <column name="color" value="#006400"/>
+            <column name="date_created" value="2024-07-12 19:08:27"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="a8c2f49e-25b7-4de6-8222-f2d348a0cd1b"/>
+        </insert>
+        <!--        PNC -->
+        <insert tableName="appointment_service">
+            <column name="appointment_service_id" value="8"/>
+            <column name="name" value="PNC Program"/>
+            <column name="description" value="PNC Program Service"/>
+            <column name="location_id" value="18"/>
+            <column name="speciality_id" value="1"/>
+            <column name="color" value="#006400"/>
+            <column name="date_created" value="2024-07-12 19:08:27"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="381299a7-4987-468a-9f23-93c19a1f98fc"/>
+        </insert>
+        <!--        HEI -->
+        <insert tableName="appointment_service">
+            <column name="appointment_service_id" value="10"/>
+            <column name="name" value="HEI Program"/>
+            <column name="description" value="Exposed Infant Monitoring Program"/>
+            <column name="location_id" value="18"/>
+            <column name="speciality_id" value="1"/>
+            <column name="color" value="#006400"/>
+            <column name="date_created" value="2024-07-12 19:08:27"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="3eae28bf-ea30-460f-88e8-2ed3d7a9f356"/>
+        </insert>
+        <!--        CXCA -->
+        <insert tableName="appointment_service">
+            <column name="appointment_service_id" value="11"/>
+            <column name="name" value="CXCA Screening"/>
+            <column name="description" value="Cervical Cancer Program Service"/>
+            <column name="location_id" value="18"/>
+            <column name="speciality_id" value="1"/>
+            <column name="color" value="#006400"/>
+            <column name="date_created" value="2024-07-12 19:08:27"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="6748e698-f65f-40b1-9423-62b537487675"/>
+        </insert>
+        <!--        FP -->
+        <insert tableName="appointment_service">
+            <column name="appointment_service_id" value="12"/>
+            <column name="name" value="Family Planning"/>
+            <column name="description" value="Family Planning Service"/>
+            <column name="location_id" value="18"/>
+            <column name="speciality_id" value="1"/>
+            <column name="color" value="#006400"/>
+            <column name="date_created" value="2024-07-12 19:08:27"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="a0f9a771-a57c-43d0-b8cd-9f808739da8f"/>
+        </insert>
+        <!--        VMMC -->
+        <insert tableName="appointment_service">
+            <column name="appointment_service_id" value="13"/>
+            <column name="name" value="VMMC Program"/>
+            <column name="description" value="VMMC Program Service"/>
+            <column name="location_id" value="16"/>
+            <column name="speciality_id" value="1"/>
+            <column name="color" value="#006400"/>
+            <column name="date_created" value="2024-07-12 19:08:27"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="91d04d20-338b-43df-8ee9-89038a3e1c84"/>
+        </insert>
+    </changeSet>
+    <changeSet id="2024-07-28-1940" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+        <and>
+            <tableExists tableName="appointment_service"/>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM appointment_service where uuid="7da17e79-6161-46f3-9c06-98bd06539fa5"
+            </sqlCheck>
+        </and>
+        </preConditions>
+        <!--        Under5 -->
+        <insert tableName="appointment_service">
+            <column name="appointment_service_id" value="9"/>
+            <column name="name" value="Under5 Program"/>
+            <column name="description" value="Under5 Program Service"/>
+            <column name="location_id" value="18"/>
+            <column name="speciality_id" value="1"/>
+            <column name="color" value="#006400"/>
+            <column name="date_created" value="2024-07-12 19:08:27"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="7da17e79-6161-46f3-9c06-98bd06539fa5"/>
+        </insert>
+    </changeSet>
+    <changeSet id="2024-07-19-2315" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="appointment_service_type"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM appointment_service_type where uuid in
+                    ("2b21baaa-1997-425e-b8c1-6e0a035e47a0", "ad0b9c96-4455-4ca5-884e-8b979938cf87",
+                    "82c8f11a-f3fb-43da-a20d-d45620df6d0d","49c96bab-ee29-4c71-bba5-8de7dc8b72bf",
+                    "9a05d9d6-3903-4a4f-96ec-fea41d288239","512d05f5-faaa-4eb2-823c-4459ccd1efa7",
+                    "11608042-28c7-4d49-9b4d-3c4038914e53")
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <!--        CXCA -->
+        <insert tableName="appointment_service_type">
+            <column name="appointment_service_type_id" value="23"/>
+            <column name="appointment_service_id" value="11"/>
+            <column name="name" value="Follow up"/>
+            <column name="duration_mins" value="15"/>
+            <column name="date_created" value="2024-07-12 19:25:04"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="2b21baaa-1997-425e-b8c1-6e0a035e47a0"/>
+        </insert>
+        <!--        PrEP -->
+        <insert tableName="appointment_service_type">
+            <column name="appointment_service_type_id" value="25"/>
+            <column name="appointment_service_id" value="6"/>
+            <column name="name" value="Follow up"/>
+            <column name="duration_mins" value="15"/>
+            <column name="date_created" value="2024-07-12 19:25:04"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="ad0b9c96-4455-4ca5-884e-8b979938cf87"/>
+        </insert>
+        <!--        HEI -->
+        <insert tableName="appointment_service_type">
+            <column name="appointment_service_type_id" value="26"/>
+            <column name="appointment_service_id" value="10"/>
+            <column name="name" value="Follow up"/>
+            <column name="duration_mins" value="15"/>
+            <column name="date_created" value="2024-07-12 19:25:04"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="82c8f11a-f3fb-43da-a20d-d45620df6d0d"/>
+        </insert>
+        <!--        ANC -->
+        <insert tableName="appointment_service_type">
+            <column name="appointment_service_type_id" value="27"/>
+            <column name="appointment_service_id" value="7"/>
+            <column name="name" value="Follow up"/>
+            <column name="duration_mins" value="15"/>
+            <column name="date_created" value="2024-07-12 19:25:04"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="49c96bab-ee29-4c71-bba5-8de7dc8b72bf"/>
+        </insert>
+        <!--        PNC -->
+        <insert tableName="appointment_service_type">
+            <column name="appointment_service_type_id" value="28"/>
+            <column name="appointment_service_id" value="8"/>
+            <column name="name" value="Follow up"/>
+            <column name="duration_mins" value="15"/>
+            <column name="date_created" value="2024-07-12 19:25:04"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="9a05d9d6-3903-4a4f-96ec-fea41d288239"/>
+        </insert>
+        <!--        VMMC -->
+        <insert tableName="appointment_service_type">
+            <column name="appointment_service_type_id" value="29"/>
+            <column name="appointment_service_id" value="13"/>
+            <column name="name" value="Follow up"/>
+            <column name="duration_mins" value="15"/>
+            <column name="date_created" value="2024-07-12 19:25:04"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="512d05f5-faaa-4eb2-823c-4459ccd1efa7"/>
+        </insert>
+        <!--        FP -->
+        <insert tableName="appointment_service_type">
+            <column name="appointment_service_type_id" value="31"/>
+            <column name="appointment_service_id" value="12"/>
+            <column name="name" value="Follow up"/>
+            <column name="duration_mins" value="15"/>
+            <column name="date_created" value="2024-07-12 19:25:04"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="11608042-28c7-4d49-9b4d-3c4038914e53"/>
+        </insert>
+    </changeSet>
+    <changeSet id="2024-07-28-1945" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="appointment_service_type"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM appointment_service_type where uuid="292487c1-dbb0-484a-9f90-cf565ea48fe7"
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <!--        Under5 -->
+        <insert tableName="appointment_service_type">
+            <column name="appointment_service_type_id" value="32"/>
+            <column name="appointment_service_id" value="9"/>
+            <column name="name" value="Follow up"/>
+            <column name="duration_mins" value="15"/>
+            <column name="date_created" value="2024-07-12 19:25:04"/>
+            <column name="creator" value="4"/>
+            <column name="voided" value="0"/>
+            <column name="uuid" value="292487c1-dbb0-484a-9f90-cf565ea48fe7"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

@@ -16,14 +16,18 @@
         <MODULE_VERSION>${project.version}</MODULE_VERSION>
         <MODULE_PACKAGE>${project.groupId}.${MODULE_ID}</MODULE_PACKAGE>
 
-        <gem.home>${basedir}/.rubygems</gem.home>
-        <gem.path>${basedir}/.rubygems</gem.path>
+        <!--        <gem.home>${basedir}/.rubygems</gem.home>-->
+        <!--        <gem.path>${basedir}/.rubygems</gem.path>-->
+
+        <gem.home>${user.home}/.m2/repository/rubygems</gem.home>
+        <gem.path>${user.home}/.m2/repository/rubygems</gem.path>
+
         <uiframeworkVersion>3.3.1</uiframeworkVersion>
         <bedManagementVersion>5.10.0</bedManagementVersion>
     </properties>
 
     <dependencies>
-    
+
         <dependency>
             <groupId>rubygems</groupId>
             <artifactId>compass</artifactId>
@@ -39,7 +43,103 @@
                     <groupId>rubygems</groupId>
                     <artifactId>rake</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>compass-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>compass-import-once</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>rb-fsevent</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>rb-inotify</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>sass</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>compass-import-once</artifactId>
+            <version>1.0.5</version>
+            <type>gem</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>compass-core</artifactId>
+            <version>1.0.3</version>
+            <type>gem</type>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>sass</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>multi_json</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>multi_json</artifactId>
+            <version>1.15.0</version>
+            <type>gem</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>rb-fsevent</artifactId>
+            <version>0.11.0</version>
+            <type>gem</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>rb-inotify</artifactId>
+            <version>0.9.5</version>
+            <type>gem</type>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>ffi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>rake</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>ffi</artifactId>
+            <version>1.9.25</version>
+            <type>gem</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>sass</artifactId>
+            <version>3.4.25</version>
+            <type>gem</type>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -49,18 +149,18 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>rubygems</groupId>
-            <artifactId>rb-inotify</artifactId>
-            <version>0.9.5</version>
-            <type>gem</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>rubygems</groupId>
-                    <artifactId>rake</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>rubygems</groupId>-->
+        <!--            <artifactId>rb-inotify</artifactId>-->
+        <!--            <version>0.9.5</version>-->
+        <!--            <type>gem</type>-->
+        <!--            <exclusions>-->
+        <!--                <exclusion>-->
+        <!--                    <groupId>rubygems</groupId>-->
+        <!--                    <artifactId>rake</artifactId>-->
+        <!--                </exclusion>-->
+        <!--            </exclusions>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>rubygems</groupId>
@@ -75,8 +175,8 @@
         </dependency>
         <!-- APPOINTMENTS MODULE DEPENDENCY -->
         <dependency>
-                <groupId>org.openmrs.module</groupId>
-                <artifactId>appointments-api</artifactId>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>appointments-api</artifactId>
         </dependency>
         <!-- APPOINTMENTS MODULE DEPENDENCY -->
         <!-- XDS Sender Dependency -->
@@ -104,7 +204,7 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>providermanagement-api</artifactId>
         </dependency>-->
-                
+
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>emrapi-api-1.12</artifactId>
@@ -513,7 +613,7 @@
                         <goals>
                             <goal>initialize-module</goal>
                         </goals>
-                        
+
                     </execution>
                     <execution>
                         <id>pack</id>
@@ -580,8 +680,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jrubyVersion>1.7.10</jrubyVersion>
-                    <execArgs>${gem.home}/bin/compass compile ${basedir}/src/main/compass</execArgs>
+                    <!--                    <jrubyVersion>1.7.10</jrubyVersion>-->
+                    <!--                    <execArgs>${gem.home}/bin/compass compile ${basedir}/src/main/compass</execArgs>-->
                 </configuration>
             </plugin>
         </plugins>
