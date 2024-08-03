@@ -17,6 +17,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.EncounterService;
+import org.openmrs.module.appointments.service.AppointmentStatusMarkerService;
 import org.openmrs.module.bahmniemrapi.encountertransaction.contract.BahmniEncounterSearchParameters;
 import org.openmrs.module.bahmniemrapi.encountertransaction.contract.BahmniEncounterTransaction;
 import org.openmrs.module.bahmniemrapi.encountertransaction.contract.BahmniObservation;
@@ -103,6 +104,9 @@ public class BahmniEncounterController extends BaseRestController {
 
     @Autowired
     ObsFormToServiceTypeMappingService obsFormToServiceTypeMappingService;
+
+    @Autowired
+    AppointmentStatusMarkerService appointmentStatusMarkerService;
 
     public BahmniEncounterController() {
     }
@@ -201,8 +205,10 @@ public class BahmniEncounterController extends BaseRestController {
                 // Get the current location
                 Location location = locationService.getLocationByUuid(bahmniEncounterTransaction.getLocationUuid());
 
+                Patient patient = patientService.getPatientByUuid(bahmniEncounterTransaction.getPatientUuid());
+
                 // For a particular patient
-                appointment.setPatient(patientService.getPatientByUuid(bahmniEncounterTransaction.getPatientUuid()));
+                appointment.setPatient(patient);
 
                 AppointmentService appointmentService = null;
                 AppointmentServiceType appointmentServiceType = null;
@@ -334,6 +340,12 @@ public class BahmniEncounterController extends BaseRestController {
                         }
                     }
                 }
+
+//                Mark Appointments
+//                Date todayMorning = new DateTime(new Date()).toDateMidnight().toDate();
+                Date todayMorning = new DateTime(bahmniEncounterTransaction.getEncounterDateTime()).toDate();
+                appointmentStatusMarkerService.markPatientFutureAppointments(patient, appointmentService, todayMorning, startDate);
+
             } catch (ParseException e) {
                 // Use the openmrs logger to log the exception
             }
