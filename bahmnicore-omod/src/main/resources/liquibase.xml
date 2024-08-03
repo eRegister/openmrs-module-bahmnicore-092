@@ -4543,6 +4543,21 @@
             <column name="appointment_service_type_uuid" value="292487c1-dbb0-484a-9f90-cf565ea48fe7"/>
         </insert>
     </changeSet>
+    <changeSet id="2024-08-03-1751" author="Moletsane">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="obs_form_service_type_mapping"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM obs_form_service_type_mapping where obs_form_concept_uuid="58849cb2-2778-41e0-953d-788a1f66b1db"
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <!--        HEI Register-->
+        <insert tableName="obs_form_service_type_mapping">
+            <column name="obs_form_concept_uuid" value="58849cb2-2778-41e0-953d-788a1f66b1db"/>
+            <column name="appointment_service_type_uuid" value="82c8f11a-f3fb-43da-a20d-d45620df6d0d"/>
+        </insert>
+    </changeSet>
     <changeSet id="2024-07-19-0049" author="Moletsane">
         <preConditions onFail="MARK_RAN">
             <and>
