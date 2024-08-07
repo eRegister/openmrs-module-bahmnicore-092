@@ -17,6 +17,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.EncounterService;
+import org.openmrs.module.appointments.service.AppointmentStatusMarkerService;
 import org.openmrs.module.bahmniemrapi.encountertransaction.contract.BahmniEncounterSearchParameters;
 import org.openmrs.module.bahmniemrapi.encountertransaction.contract.BahmniEncounterTransaction;
 import org.openmrs.module.bahmniemrapi.encountertransaction.contract.BahmniObservation;
@@ -57,13 +58,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.bahmni.module.bahmnicore.util.MiscUtils.getFollowUpDateObservationRecursive;
@@ -103,6 +98,9 @@ public class BahmniEncounterController extends BaseRestController {
 
     @Autowired
     ObsFormToServiceTypeMappingService obsFormToServiceTypeMappingService;
+
+    @Autowired
+    AppointmentStatusMarkerService appointmentStatusMarkerService;
 
     public BahmniEncounterController() {
     }
@@ -159,16 +157,20 @@ public class BahmniEncounterController extends BaseRestController {
     @Transactional
     public BahmniEncounterTransaction update(@RequestBody BahmniEncounterTransaction bahmniEncounterTransaction) {
         setUuidsForObservations(bahmniEncounterTransaction.getObservations());
-        //BahmniObservation artFollowUpObservation = getFollowUpDateObservationRecursive(
-        //        bahmniEncounterTransaction.getObservations()
-        //        , "ART, Follow-up date");
 
-        BahmniObservation artFollowUpObservation = getFollowUpDateObservation(
-                bahmniEncounterTransaction.getObservations());
+        bahmniEncounterTransaction.getObservations().forEach( observationForm -> {
+            String obsFormUuid = observationForm.getConceptUuid();
+            String serviceTypeUuid = obsFormToServiceTypeMappingService.getServiceTypeUuid(obsFormUuid);
 
-        if(artFollowUpObservation != null){
-            createAppointmentForARTPatient(artFollowUpObservation, bahmniEncounterTransaction);
-        }
+            if (serviceTypeUuid != null || serviceTypeUuid != "" ){
+
+                BahmniObservation artFollowUpObservation = getFollowUpDateObservation(new ArrayList<>(Collections.singletonList(observationForm)));
+
+                if(artFollowUpObservation != null)
+                    createAppointmentForARTPatient(artFollowUpObservation, bahmniEncounterTransaction, serviceTypeUuid);
+            }
+        });
+
         return bahmniEncounterTransactionService.save(bahmniEncounterTransaction);
     }
 
@@ -184,7 +186,7 @@ public class BahmniEncounterController extends BaseRestController {
                 .filter(avb -> avb.getUuid().equals(serviceTypeUuid)).findAny().get();
     }
 
-    private void createAppointmentForARTPatient(BahmniObservation bahmniObs, BahmniEncounterTransaction bahmniEncounterTransaction){
+    private void createAppointmentForARTPatient(BahmniObservation bahmniObs, BahmniEncounterTransaction bahmniEncounterTransaction, String appointmentServiceTypeUuid){
         DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
         Date startDate = new Date();
         Date endDate = new Date();
@@ -201,71 +203,109 @@ public class BahmniEncounterController extends BaseRestController {
                 // Get the current location
                 Location location = locationService.getLocationByUuid(bahmniEncounterTransaction.getLocationUuid());
 
+                Patient patient = patientService.getPatientByUuid(bahmniEncounterTransaction.getPatientUuid());
+
                 // For a particular patient
-                appointment.setPatient(patientService.getPatientByUuid(bahmniEncounterTransaction.getPatientUuid()));
+                appointment.setPatient(patient);
 
                 AppointmentService appointmentService = null;
                 AppointmentServiceType appointmentServiceType = null;
 
-                String obsFormUuid = bahmniEncounterTransaction.getObservations().stream().findFirst().get().getConceptUuid();
-
-                String appointmentServiceTypeUuid = obsFormToServiceTypeMappingService
-                        .getServiceTypeUuid(obsFormUuid);
-
                 appointmentServiceType = appointmentServiceService.getAppointmentServiceTypeByUuid(appointmentServiceTypeUuid);
 
-                appointmentService = appointmentServiceType.getAppointmentService();
+                if (appointmentServiceType != null){
 
-                // Set the appointment service type
-                appointment.setServiceType(appointmentServiceType);
+                    appointmentService = appointmentServiceType.getAppointmentService();
 
-                // Set the appointment Location
-                appointment.setLocation(location);
+                    // Set the appointment service type
+                    appointment.setServiceType(appointmentServiceType);
 
-                if(bahmniEncounterTransaction.getEncounterUuid() == null){
-                    // New encounter, first time an HIV Intake or Follow up is saved
-                    appointment.setService(appointmentService);
+                    // Set the appointment Location
+                    appointment.setLocation(location);
 
-                    if(!bahmniEncounterTransaction.getProviders().isEmpty())
-                    {
-                        appointment.setProvider(providerService.getProviderByUuid(bahmniEncounterTransaction
-                                .getProviders().iterator().next().getUuid()));
-                    }
+                    if(bahmniEncounterTransaction.getEncounterUuid() == null){
+                        // New encounter, first time an HIV Intake or Follow up is saved
+                        appointment.setService(appointmentService);
 
-                    appointment.setStartDateTime(startDate);
-                    appointment.setEndDateTime(endDate);
-                    appointment.setAppointmentKind(AppointmentKind.valueOf("Scheduled"));
-                    appointment.setComments("");
+                        if(!bahmniEncounterTransaction.getProviders().isEmpty())
+                        {
+                            appointment.setProvider(providerService.getProviderByUuid(bahmniEncounterTransaction
+                                    .getProviders().iterator().next().getUuid()));
+                        }
 
-                    appointmentsService.validateAndSave(appointment);
+                        appointment.setStartDateTime(startDate);
+                        appointment.setEndDateTime(endDate);
+                        appointment.setAppointmentKind(AppointmentKind.valueOf("Scheduled"));
+                        appointment.setComments("");
 
-                } else if(bahmniEncounterTransaction.getEncounterUuid() != null){
-                    if(new DateTime(bahmniEncounterTransaction.getEncounterDateTime()).toDateMidnight()
-                            .equals(new DateTime(new Date()).toDateMidnight())){
+                        appointmentsService.validateAndSave(appointment);
 
-                        // Search for the appointment using the parameters, patient, service type and location
-                        List<Appointment> foundAppointments = appointmentsService.search(appointment);
+                    } else if(bahmniEncounterTransaction.getEncounterUuid() != null){
+                        if(new DateTime(bahmniEncounterTransaction.getEncounterDateTime()).toDateMidnight()
+                                .equals(new DateTime(new Date()).toDateMidnight())){
 
-                        if (foundAppointments.iterator().hasNext()) {
-                            // Can only have one and only one future appointment for the patient
-                            // Sort the list in descending order first
-                            List<Appointment> sortedAppointments = foundAppointments.stream()
-                                    .sorted(Comparator.comparing(Appointment::getStartDateTime).reversed())
-                                    .collect(Collectors.toList());
+                            // Search for the appointment using the parameters, patient, service type and location
+                            List<Appointment> foundAppointments = appointmentsService.search(appointment);
 
-                            Appointment searchedAppointment = sortedAppointments.iterator().next();
+                            if (foundAppointments.iterator().hasNext()) {
+                                // Can only have one and only one future appointment for the patient
+                                // Sort the list in descending order first
+                                List<Appointment> sortedAppointments = foundAppointments.stream()
+                                        .sorted(Comparator.comparing(Appointment::getStartDateTime).reversed())
+                                        .collect(Collectors.toList());
 
-                            // Check to see if the Follow Up date is in the future compared to today's date, only update
-                            // an appointment in the future
-                            if(new DateTime(searchedAppointment.getEndDateTime()).toDateMidnight()
-                                    .isAfter(new DateTime(new Date()).toDateMidnight())) {
-                                // Update/Edit appointment with the new Follow up date if set in the future for the patient
-                                // , in same location, for same service
-                                searchedAppointment.setStartDateTime(startDate);
-                                searchedAppointment.setEndDateTime(endDate);
-                                appointmentsService.validateAndSave(searchedAppointment);
+                                Appointment searchedAppointment = sortedAppointments.iterator().next();
+
+                                // Check to see if the Follow Up date is in the future compared to today's date, only update
+                                // an appointment in the future
+                                if(new DateTime(searchedAppointment.getEndDateTime()).toDateMidnight()
+                                        .isAfter(new DateTime(new Date()).toDateMidnight())) {
+                                    // Update/Edit appointment with the new Follow up date if set in the future for the patient
+                                    // , in same location, for same service
+
+
+                                    if (searchedAppointment.getService().getUuid().equals(appointmentService.getUuid())){
+                                        searchedAppointment.setStartDateTime(startDate);
+                                        searchedAppointment.setEndDateTime(endDate);
+                                        appointmentsService.validateAndSave(searchedAppointment);
+                                    }else {
+
+                                        // Create a new future appointment for patient, for service in location
+                                        appointment.setService(appointmentService);
+
+                                        if(!bahmniEncounterTransaction.getProviders().isEmpty())
+                                        {
+                                            appointment.setProvider(providerService.getProviderByUuid(bahmniEncounterTransaction
+                                                    .getProviders().iterator().next().getUuid()));
+                                        }
+
+                                        appointment.setStartDateTime(startDate);
+                                        appointment.setEndDateTime(endDate);
+                                        appointment.setAppointmentKind(AppointmentKind.valueOf("Scheduled"));
+                                        appointment.setComments("");
+
+                                        appointmentsService.validateAndSave(appointment);
+                                    }
+
+                                } else {
+                                    // Create a new future appointment for patient, for service in location
+                                    appointment.setService(appointmentService);
+
+                                    if(!bahmniEncounterTransaction.getProviders().isEmpty())
+                                    {
+                                        appointment.setProvider(providerService.getProviderByUuid(bahmniEncounterTransaction
+                                                .getProviders().iterator().next().getUuid()));
+                                    }
+
+                                    appointment.setStartDateTime(startDate);
+                                    appointment.setEndDateTime(endDate);
+                                    appointment.setAppointmentKind(AppointmentKind.valueOf("Scheduled"));
+                                    appointment.setComments("");
+
+                                    appointmentsService.validateAndSave(appointment);
+                                }
                             } else {
-                                // Create a new future appointment for patient, for service in location
+                                // New encounter, first time an HIV Intake or Follow up is saved
                                 appointment.setService(appointmentService);
 
                                 if(!bahmniEncounterTransaction.getProviders().isEmpty())
@@ -281,59 +321,49 @@ public class BahmniEncounterController extends BaseRestController {
 
                                 appointmentsService.validateAndSave(appointment);
                             }
-                        } else {
-                            // New encounter, first time an HIV Intake or Follow up is saved
-                            appointment.setService(appointmentService);
+                        }
+                    } else if(new DateTime(bahmniEncounterTransaction.getEncounterDateTime()).toDateMidnight()
+                            .isBefore(new DateTime(new Date()).toDateMidnight())) {
+                        // Happened before today and has a follow up date, therefore an EDIT of a retrospective visit
 
-                            if(!bahmniEncounterTransaction.getProviders().isEmpty())
-                            {
-                                appointment.setProvider(providerService.getProviderByUuid(bahmniEncounterTransaction
-                                        .getProviders().iterator().next().getUuid()));
+                        // Do nothing, determine how to tie a retrospective encounter with a particular appointment date
+                        // The first date in the future as compared to the retrospective visit date
+                        // getAllAppointmentsInDateRange
+
+                        // Get all appointments in the future compared to the retrospective encounter date
+                        List<Appointment> foundAppointments = appointmentsService.getAllAppointmentsInDateRange(
+                                bahmniEncounterTransaction.getEncounterDateTime(), new Date());
+
+                        if (foundAppointments.iterator().hasNext()) {
+                            // Can only have one and only one future appointment for the patient
+                            // Sort the list in ascending order, smallest date in future compared to retrospective
+                            // encounter date first
+                            List<Appointment> sortedAppointments = foundAppointments.stream()
+                                    .sorted(Comparator.comparing(Appointment::getStartDateTime))
+                                    .collect(Collectors.toList());
+
+                            Appointment searchedAppointment = sortedAppointments.iterator().next();
+
+                            // Check to see if the Follow Up date is in the future compared to the retrospective
+                            // encounter date, only update the first appointment in the future relative to encounter date
+                            if(new DateTime(searchedAppointment.getEndDateTime()).toDateMidnight()
+                                    .isAfter(new DateTime(bahmniEncounterTransaction.getEncounterDateTime())
+                                            .toDateMidnight().plusDays(10))) {
+                                // Update/Edit appointment with the new Follow up date if set in the future for the patient
+                                // , in same location, for same service
+                                searchedAppointment.setStartDateTime(startDate);
+                                searchedAppointment.setEndDateTime(endDate);
+                                appointmentsService.validateAndSave(searchedAppointment);
                             }
-
-                            appointment.setStartDateTime(startDate);
-                            appointment.setEndDateTime(endDate);
-                            appointment.setAppointmentKind(AppointmentKind.valueOf("Scheduled"));
-                            appointment.setComments("");
-
-                            appointmentsService.validateAndSave(appointment);
                         }
                     }
-                } else if(new DateTime(bahmniEncounterTransaction.getEncounterDateTime()).toDateMidnight()
-                        .isBefore(new DateTime(new Date()).toDateMidnight())) {
-                    // Happened before today and has a follow up date, therefore an EDIT of a retrospective visit
 
-                    // Do nothing, determine how to tie a retrospective encounter with a particular appointment date
-                    // The first date in the future as compared to the retrospective visit date
-                    // getAllAppointmentsInDateRange
-
-                    // Get all appointments in the future compared to the retrospective encounter date
-                    List<Appointment> foundAppointments = appointmentsService.getAllAppointmentsInDateRange(
-                            bahmniEncounterTransaction.getEncounterDateTime(), new Date());
-
-                    if (foundAppointments.iterator().hasNext()) {
-                        // Can only have one and only one future appointment for the patient
-                        // Sort the list in ascending order, smallest date in future compared to retrospective
-                        // encounter date first
-                        List<Appointment> sortedAppointments = foundAppointments.stream()
-                                .sorted(Comparator.comparing(Appointment::getStartDateTime))
-                                .collect(Collectors.toList());
-
-                        Appointment searchedAppointment = sortedAppointments.iterator().next();
-
-                        // Check to see if the Follow Up date is in the future compared to the retrospective
-                        // encounter date, only update the first appointment in the future relative to encounter date
-                        if(new DateTime(searchedAppointment.getEndDateTime()).toDateMidnight()
-                                .isAfter(new DateTime(bahmniEncounterTransaction.getEncounterDateTime())
-                                        .toDateMidnight().plusDays(10))) {
-                            // Update/Edit appointment with the new Follow up date if set in the future for the patient
-                            // , in same location, for same service
-                            searchedAppointment.setStartDateTime(startDate);
-                            searchedAppointment.setEndDateTime(endDate);
-                            appointmentsService.validateAndSave(searchedAppointment);
-                        }
-                    }
                 }
+
+//              Mark Appointments
+                Date todayMorning = new DateTime(bahmniEncounterTransaction.getEncounterDateTime()).toDate();
+                appointmentStatusMarkerService.markPatientFutureAppointments(patient, appointmentService, todayMorning, startDate);
+
             } catch (ParseException e) {
                 // Use the openmrs logger to log the exception
             }
